@@ -990,14 +990,22 @@ function applyFilters(){
 function onExChange(){
   currentEx = document.getElementById('c-ex').value;
   updateTV();
-  connectBinance(currentPair);
+  /* conectăm WebSocket doar pe pagina Singular */
+  if(currentPage === 'sing') connectBinance(currentPair);
 }
 function onPairChange(){
   currentPair = document.getElementById('c-pair').value;
   basePrice   = (PAIR_META[currentPair]||PAIR_META.ETHUSDT).p;
-  initSimBooks();
+  initSimBooks(); /* regenerăm imediat cărțile simulate pentru TOATE bursele */
   updateTV();
-  connectBinance(currentPair);
+  if(currentPage === 'sing'){
+    /* Singular: date reale Binance */
+    connectBinance(currentPair);
+  } else if(currentPage === 'cons'){
+    /* Constructor: date simulate, fără WebSocket */
+    renderCons();
+    setLive(true, 'SIMULAT — ' + currentPair.replace('USDT','/USDT') + ' | 12 burse');
+  }
 }
 
 /* ─── SNAPSHOT TIMER ─── */
